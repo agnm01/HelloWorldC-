@@ -30,11 +30,13 @@ namespace HelloWorldWebApp.Controllers
             return ConvertResponseToWeatherRecordList(response.Content);
         }
 
+        [NonAction]
         public float ConvertKelvinToCelsius(float kelvin)
         {
             return kelvin - 273.15f;
         }
 
+        [NonAction]
         public IEnumerable<DailyWeatherRecord> ConvertResponseToWeatherRecordList(string content)
         {
             var json = JObject.Parse(content);
