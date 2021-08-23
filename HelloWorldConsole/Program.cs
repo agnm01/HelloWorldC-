@@ -1,14 +1,10 @@
-﻿// <copyright file="Program.cs" company="Principal33">
-// Copyright (c) Principal33. All rights reserved.
-// </copyright>
+﻿using System;
 
-using System;
-
-namespace HelloWorldConsole
+namespace Hello_World
 {
-   public class Program
+    class Program
     {
-       private static void Main(string[] args)
+        static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
         }

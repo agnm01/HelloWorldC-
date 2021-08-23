@@ -1,110 +1,41 @@
-using HelloWorldWebApp.Models;
-using HelloWorldWebApp.Services;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using HelloWorldWeb.Models;
+using HelloWorldWeb.Services;
+using Moq;
 using Xunit;
 
 namespace HelloWorldWeb.Tests
 {
     public class TeamServiceTests
     {
-        private ITimeService timeService;
+        private Mock<ITimeService> timeMock;
 
-        [Fact]
-        public void AddTeamMember()
+        private void InitializeTimeServiceMock()
         {
-            // Assume
-
-            ITeamService teamService = new TeamService();
-            int id = teamService.GetTeamInfo().TeamMembers.Max(member => member.Id);
-            int size = teamService.GetTeamInfo().TeamMembers.Count();
-
-            // Act
-
-            teamService.AddTeamMember(new Member("George", timeService));
-
-            // Assert
-
-            Assert.Equal(size + 1, teamService.GetTeamInfo().TeamMembers.Count);
-            Assert.Equal(id + 1, teamService.GetTeamInfo().TeamMembers[size].Id);
-            Assert.Equal("George", teamService.GetTeamInfo().TeamMembers[size].Name);
+            timeMock = new Mock<ITimeService>();
+            timeMock.Setup(_ => _.Now()).Returns(new DateTime(2021, 8, 11));
         }
 
         [Fact]
-        public void AddTeamMemberWithId()
+        public void GettingAgeTest()
         {
             // Assume
-
-            ITeamService teamService = new TeamService();
-            int id = teamService.GetTeamInfo().TeamMembers.Max(member => member.Id);
-            int size = teamService.GetTeamInfo().TeamMembers.Count();
-
-            // Act
-
-            teamService.AddTeamMember(new Member(8, "Mike", timeService));
-
-            // Assert
-
-            Assert.Equal(size + 1, teamService.GetTeamInfo().TeamMembers.Count);
-            Assert.NotEqual(8, teamService.GetTeamInfo().TeamMembers[size].Id);
-            Assert.Equal(id + 1, teamService.GetTeamInfo().TeamMembers[size].Id);
-            Assert.Equal("Mike", teamService.GetTeamInfo().TeamMembers[size].Name);
-        }
-
-        [Fact]
-        public void UpdateTeamMember()
-        {
-            // Assume
-            ITeamService teamService = new TeamService();
-            Member member = new Member(2, "Anna", timeService);
+            InitializeTimeServiceMock();
+            var timeService = timeMock.Object;
+            var newTeamMember = new Member("Lisa", 6, timeService);
+            newTeamMember.Birthdate = new DateTime(1990, 10, 13);
 
             // Act
-
-            teamService.UpdateTeamMember(member);
-
-            // Assert
-
-            Assert.Equal("Anna", teamService.GetTeamInfo().TeamMembers[1].Name);
-
-
-        }
-
-        [Fact]
-        public void UpdateTeamMemberNoId()
-        {
-            // Assume
-            ITeamService teamService = new TeamService();
-            TeamInfo teamInfo = teamService.GetTeamInfo();
-            Member member = new Member(100, "Anna", timeService);
-
-            // Act
-
-            teamService.UpdateTeamMember(member);
+            int age = newTeamMember.GetAge();
 
             // Assert
-
-            Assert.Null(teamService.GetTeamInfo().TeamMembers.ElementAtOrDefault(99));
-            Assert.Equal(teamInfo, teamService.GetTeamInfo());
+            Assert.Equal(30, age);
+            timeMock.Verify(_ => _.Now(), Times.Once());
         }
-
-        [Fact]
-        public void DeleteTeamMember()
-        {
-            // Assume
-
-            ITeamService teamService = new TeamService();
-            int count = teamService.GetTeamInfo().TeamMembers.Count;
-
-            // Act
-
-            teamService.DeleteTeamMember(2);
-
-            // Assert
-
-            Assert.False(teamService.GetTeamInfo().TeamMembers.Exists(r => r.Id == 2));
-            Assert.Equal(count - 1 , teamService.GetTeamInfo().TeamMembers.Count);
-
-        }
-
-      
     }
 }
+
